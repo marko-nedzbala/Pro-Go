@@ -1,0 +1,698 @@
+
+
+
+https://github.com/apress/pro-go
+
+
+
+PART I - LANGUAGE
+
+Chapter01
+First Go Application
+features are grouped into packages
+dependencies on packages are made using the import statement
+
+entry point for your application
+func main() {//code}
+
+Creating the project
+$ go mod init projectName
+
+this will create a go.mod file that keeps track of packages a project depends on
+
+to run the project
+$ go run .
+
+Slices are resized automatically as new items are added, and initial capacity determines how many items can be added before the slice has to be resized
+
+
+
+Chapter02
+Putting Go in Context
+
+Has:
+safe pointers
+automatic memory management
+
+Best suited for server development or system development
+
+
+
+Chapter03
+Using the Go Tools
+
+Go commands
+go command provides access to all the features needed to compile and execute Go code
+
+Most common Go commands
+Argument		Description
+build			go build compiles the source code in the current directory and generates an executable file
+clean			go clean command removes the output produced by the go build command
+doc				go doc command generates documentation from source code
+fmt				go fmt command ensures consistent indentation and alignment in source code files
+get				go get commands downloads and installs external packages
+install			go install command downloads packages and is usually used to install tool packages
+help			go help command displays help information for other Go features
+mod				go mod command is used to create and manage a Go module
+run				go run command builds and executes the source code in a specified folder without creating an executable output
+test			go test command executes unit tests
+version			go version command writes out the Go version number
+vet				go vet command detects common problems in Go code
+
+Creating a Go Project
+package main					package declaration
+import "fmt"					import statement
+func main() {
+    fmt.Println("Hello, Go")	function
+}
+
+main function creates an entry point for your application
+
+semicolons are required to terminate code statements, but not required in source code file. Go build tools figure out where semicolons need to go as they process files, acting as though they had been added by the developer.
+You need to carefully follow the Go syntax guidelines as designed by the designers, or there will be problems
+
+Compiling and Running Source Code
+$ go build main.go
+this will build an executable file
+
+best to use the following
+$ go run main.go
+
+Defining a Module
+$ go mod init moduleName
+
+Debugging Go code
+standard debugger is Delve
+a 3rd party tool
+$ go install github.com/go-delve/delve/cmd/dlv@latest
+
+$ dlv version
+if no path is installed
+$ ~/go/bin/dlv
+
+go install is for tools
+go get is for packages
+
+Linting Go Code
+revive package
+$ go install github.com/mgechev/revive@latest
+
+how Go uses comments
+$ go doc -all
+
+Analyzing code
+$ go vet myFile.go
+
+Formatting Go code
+$ go fmt main.go
+
+
+
+Chapter04
+Basic Types, Values, and Pointers
+
+each package in the standard library groups together a set of related features
+
+Basic Data Types
+int
+uint
+byte
+float32, float64
+complex64, complex128
+bool
+string
+rune
+
+Constants
+typed constants
+const variableName dataType = value
+
+untyped constants
+const variableName = value
+
+Iota
+iota keyword is used to create a series of successive untyped integer constants without needing to assign individual values to them
+const (
+    day01 = iota
+    day02
+    day03
+)
+
+Variables
+defining variables
+var variableName dataType = value
+var variableName = value
+var variableName dataType   //variable will be defined it's 0 value
+variableName := value       //short variable declaration syntax, can only be used within functions, can redefine variables
+
+blank identifier _
+
+Pointers
+memory addresses that store a specific type of value
+
+first := 100
+var second *int = &first
+
+fmt.Println(second) //will print out the memory location of the variable
+fmt.Println(*second) //will print out the value of the variable
+
+following a pointer, reading the value at the memory address that the pointer refers to
+*, dereferencing the pointer, tells Go to follow the pointer and get the value at the memory location
+
+Go let's you chose between a reference or value type each time you use a value, compared to C# which forces you to chose when you create a datatype
+
+
+
+Chapter05
+Operations and Conversions
+
+Parsing Binary, Octal and Hexadecimal integers
+parse in a binary file to octal
+strconv.ParseInt(val1, 2, 8)
+
+creating integer values form strings
+Integer Convenience function
+int1, int1err := strconv.Atoi("mystring")
+myString := strconv.Itoa(val)
+
+float1, float1err := strconv.ParseFloat(val1, 64)
+
+Formatting values as strings
+FormatBool(val)
+FormatInt(val, base)
+FormatUint(val, base)
+FormatFloat(val, format, precision, size)
+Itoa(val)
+
+
+
+Chapter06
+Flow Control
+
+Initialization statement with an if statement
+the initialization statement is executed before the if statement's expression es evaluated
+a simple statement; can define a new variable, assign a new value to an exisiting variable, or invoke a function
+
+// example
+// this is the initialization statement myVariable01, err := strc.conv.Atoi(myVariable02);
+if myVariable01, err := strc.conv.Atoi(myVariable02); err == nil {
+	//code
+}
+
+Loops
+for loop
+
+for initialization statement {
+	post statement
+}
+
+for loop
+for initialization statement; condition; post statement {
+	//code
+}
+
+for counter := 0; counter <= 3; counter++ {
+	//code
+}
+
+Do...While loop
+for counter := 0; true; counter++ {
+	//first run
+	if (counter > 3) {
+		break
+	}
+}
+
+Enumerating sequences
+for index, value := range collection {
+	//code
+}
+
+Switch statements
+switch statements do not fall through automatically
+switch comparison_value {
+	case 01:
+		//case statement
+	case 02:
+		//case statement
+	case 03, 04:
+		//case statement
+	default:
+		//case statement
+}
+
+switch statement with initialization statement
+switch val := counter / 2; val {
+	//code
+}
+
+Can omit a comparison value and truly use switch statement as a concise alternative to if statements
+switch {
+	case val == 0:
+		//case statement
+	case val < 3:
+		//case statement
+	case val >= 3 && val < 7:
+		//case statement
+	default:
+		//case statement
+}
+
+
+
+Chapter07
+Using Arrays, Slices, and Maps
+
+Arrays
+have a fixed length and can be accessed via index
+var arrayName [size]dataType
+
+Array literal syntax
+arrayName := [length]dataType {value01, value02, value03}
+
+the type of an array is the combination of its size and underlying type
+
+can let the compiler determine the array length
+arrayName := [...]dataType {value01, value02, value03}
+
+Enumerating Arrays
+for index, value := range arrayName {
+	//code
+}
+
+Slices
+a variable-length array, useful when you don't how many values you need to store or when the number changes over time
+length is not part of the slice type
+sliceName := make([]dataType, length)
+
+Slice literal syntax
+sliceArray := []dataType {value01, value02, value03}
+
+Appending elements to a slice
+slices can be expanded to accomodate additional elements
+
+sliceName = append(sliceName, "value04", "value05")
+
+can allocate additional slice capacity so the array won't constantly be copied
+sliceName := make([]dataType, length, capacity)
+
+Length: how many values it can currently contain
+Number of elements that can be stored in the underlying array before the slice must be resized and a new array created
+Capacity: at minimum will be the length, but if larger then additional capacity has been allocated with the make function
+
+len()
+cap()
+
+append one slice to another
+sliceName03 := append(sliceName01, sliceName02...)
+
+Can create slices from exisiting arrays
+sliceName := arrayName[beginningIndex: endingIndex: maxValue]
+
+beginningIndex: inclusive
+endingIndex: exculsive
+maxValue: max capacity = max value  low value
+
+Make slices predictable by dividing them into 2 categories
+Page 187 to
+1.) Fixed-length view into a fixed-length array
+slices are mapped into a specfic region of the array, that can be selected programmatically
+can change the elements of the slice, but not append new elements, all slices are mapped into that array will use modified elements
+
+2.) Variable-length data collection
+each slice has its own backing array, not shared by another slice
+can add new elements to the slice without impacting other slices
+
+copy function
+used to copy elements between slices, ensure that slices have separate arrays
+the slice has to be initialized
+copy(destinationSlice, sourceSlice)
+
+Comparing slices
+cannot compare slices expect to the nil value
+can use the reflect package
+
+Maps
+mapName := make(map[keyDatatype]valueDataType, length)
+
+map literal syntax
+mapName := map[keyDatatype]valueDataType {
+	"keyName01": value01,
+	"keyName02": value02,
+}
+
+determining if a value exists in a Map using "comma ok" technique
+value, ok := sliceName["keyName"]
+value: the value returned
+ok: a bool, true if the value exists and false if the value doesn't exists
+
+if value, ok := sliceName["keyName"]; ok {
+	fmt.Println("Stored value: ", value)
+} else {
+	fmt.Println("No stored value")
+}
+
+removing items from a Map
+delete(mapName, "keyName")
+
+Enumerating the contents of a Map
+for key, value := range mapName {
+		fmt.Println(key)
+		fmt.Println(value)
+}
+
+Enumerating a Map in Order
+//sort the keys and then loop the map
+keys := make([]string, 0, len(mapName))
+for key, _ := range mapName {
+	keys = append(keys, key)
+}
+sort.String(keys)
+for _, key := range keys {
+	fmt.Println("Key: ", key, "Value: ", products[key])
+}
+
+Runes
+rune type represents a Unicode code point, a single character, avoids slicing strings in the middle of characters
+var runeName []rune = []rune("some text")
+
+
+
+Chapter08
+Defining and Using Functions
+
+Variadic parameters
+func functionName(argumentName01 dataType01, argumentName02 []dataType02) {
+	for _, x := range argumentName02 {
+		//code
+	}
+}
+
+defer keyword
+used to schedule a call that will be performed at the end of the function being called
+great for releasing resources and allows statements to be be grouped together
+
+defer statementCall
+
+
+
+Chapter09
+Using Function Types
+
+functions have a datatype, therefore can be:
+	assigned to variables
+	used as function parameters
+	arguments
+	results
+
+Function Types
+func functionName(argumnetName01 dataType01, argumnetName02 dataType02) {
+	//code
+}
+
+func functionName(argumnetName01 dataType01, argumnetName02 dataType02) returnDataType01, returnDataType02{
+	//code
+}
+
+Using functions as arguments
+func functionName01(argumnetName01 dataType01, argumnetName02 dataType02,
+					functionName02 func(dataType01, dataType02) returnDataType01) {
+	functionName02(argumnetName01)
+}
+
+Using functions as results
+func functionName(argumnetName01 dataType01, argumnetName02 dataType02) func(dataType03) returnDataType01 {
+	if (condition01) {
+		return functionName02
+	}
+	return functionName03
+}
+
+function type variable
+var variableName func(dataType01) returnDataType
+//to use example
+for product, price := range products {
+	var calcFunc func(float64) float64
+	if price > 100 {
+		// assign the function to the variable
+		calcFunc = calcWithTax
+	} else {
+		// assign the function to the variable
+		calcFunc = calcWithoutTax
+	}
+	// now the function will called
+	totalPrice := calcFunc(price)
+	fmt.Println("Product: ", product, "Price: ", totalPrice)
+}
+
+Functions as arguments
+func times2(times int) int {
+	return times * 2
+}
+
+func times3(time int) int {
+	return time * 3
+}
+// notice have we define and take the function
+func printTimes(times int, calc func(int) int) {
+	fmt.Println("Times result: ", calc(times))
+}
+
+myTimes := map[string]int{
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+}
+for _, v := range myTimes {
+	if v%2 == 0 {
+		printTimes(v, times2)
+	} else {
+		printTimes(v, times3)
+	}
+}
+
+Functions as results
+func myFunction(argumentName01 dataType01) func(dataType02) dataType03 {
+	//code
+	return functionName01
+}
+
+Creating function type aliases
+assigns a name to a function signature so that the parameter and result types are not specified every time the function type is used
+
+//creating
+type functionAliasName func(dataType01, dataType02) returnDataType01
+
+//now to use
+func functionName(argumnetName01 dataType01, argumnetName02 dataType02) functionAliasName {
+	if (condition01) {
+		return functionName02
+	}
+	return functionName03
+}
+
+Literal function syntax
+anonymous functions
+var variableName = func argumnetName01 dataType01, argumnetName02 dataType02) returnDataType01 {
+	//code
+}
+
+can also directly return functions
+
+Function closures
+Page 252 to Page 261
+
+can use a pointer to avoid early evaluation to ensure that the current value is used by a function
+
+
+
+Chapter10
+Defining Structs
+
+structs are how we define custom data types in Go
+
+custom data types are known as struct types in Go
+
+// define a struct
+type StructName struct {
+	fieldName01 dataType01,
+	fieldName02, fieldName03 dataType02
+}
+
+// create a struct
+myStruct := StructName {
+	fieldName01: value01,
+	fieldName02: value02,
+}
+
+// use a struct
+myStruct.fieldName01
+
+// change a value
+myStruct.fieldName01 = newValue
+
+var variableName = new(StructName)
+//is the same as
+var variableName = &StructName{}
+
+can use positional arguments when creating structs
+myStruct := StructName { fieldName01, fieldName02 }
+
+Embedded fields
+a field defined without a name and it is accessed using the name of its type
+
+type Product struct {
+	name string
+	price float64
+}
+type Store struct {
+	Product
+	count int
+}
+items := Store {
+	Product: Product{"Bike", 1000},
+	count: 100
+}
+//now access it
+items.Product.name
+items.Product.price
+items.count
+
+//example of embedded types
+
+fieldName01
+type Products struct {
+	name string
+	price float64
+}
+type Outdoors struct {
+	Products
+	condition string
+}
+type Indoors struct {
+	Products
+	delivery float64
+}
+type Store struct {
+	Outdoors
+	Indoors
+	count int
+}
+items := Store {
+	Outdoors: Outdoors {
+		Products: Products{"Bike", 500},
+		condition: "Good",
+	},
+	Indoors: Indoors {
+		Products: Products{"Computer", 1500},
+		delivery: 10.99,
+	},
+	count: 12,
+}
+//now access them
+fmt.Println("Indoor product name:", items.Indoors.Products.name)
+fmt.Println("Indoor product price:", items.Indoors.Products.price)
+fmt.Println("Indoor product delivery price:", items.Indoors.delivery)
+
+fmt.Println("Outdoor product name:", items.Outdoors.Products.name)
+fmt.Println("Outdoor product price:", items.Outdoors.Products.price)
+fmt.Println("Outdoor product delivery price:", items.Outdoors.delivery)
+
+fmt.Println("Count:", items.count)
+
+define an additional field in a struct
+type Store struct {
+	Products
+	Alternate Products
+	count int
+}
+//now when creating
+items := Store {
+	Products: Products{"Bike", 100},
+	Alternate: Products{"Computer", 1000},
+	count: 100
+}
+
+Comparing struct values
+can compare structs if all their fields can be compared
+
+Converting struct values
+a struct type can be converted into any other struct type that has the same fields, all the fields have the same name and type and are defined in the same order
+
+Defining anonymous struct types
+sTest := struct {
+	name string
+}{
+	name: "Example",
+}
+fmt.Println("A test:", sTest.name)
+
+Structs and Pointers
+assigning a struct to a new variable or using a struct as a function parameter creates a new value that copies the field values
+
+structName02 := &structName01
+fmt.Println("structName01:", structName01.name)
+fmt.Println("structName02:", (*structName02).name)
+
+LEFT OFF PAGE 277
+
+
+
+
+Part I Chapters 1 to 15
+Part II Chapters 16 to 31
+Part III Chapters 32 to 38
+
+PART I
+CH10 Page 291
+CH11 Page 326
+CH12 Page 348
+CH13 Page 368
+CH14 Page 408
+CH15 Page 427
+
+PART II
+CH16 Page 461
+CH17 Page 481
+CH18 Page 500
+CH19 Page 528
+CH20 Page 555
+CH21 Page 581
+CH22 Page 606
+CH23 Page 637
+CH24 Page 672
+CH25 Page 701
+CH26 Page 730
+CH27 Page 761
+CH28 Page 791
+CH29 Page 817
+CH30 Page 842
+CH31 Page 861
+
+PART III
+CH32 Page 886
+CH33 Page 922
+CH34 Page 968
+CH35 Page 992
+CH36 Page 1017
+CH37 Page 1051
+CH38 Page 1072
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
